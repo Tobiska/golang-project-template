@@ -1,0 +1,14 @@
+type User {
+    username: String!
+    password: String!
+    email: String!
+}
+
+type EmailValidationProblem implements ProblemInterface {
+    message: String!
+}
+
+union UserResolvingResult =
+    | User
+    | EmailValidationProblem
+    | InternalErrorProblem

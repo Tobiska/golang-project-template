@@ -1,0 +1,19 @@
+extend type UserMutation {
+    create(
+        input: UserCreateInput!
+    ): UserCreateResult! @goField(forceResolver: true)
+}
+
+input UserCreateInput {
+    username: String!
+    email: String!
+    password: String!
+}
+
+type UserCreateOk {
+    user: User!
+}
+
+union UserCreateResult =
+        | InternalErrorProblem
+        | UserCreateOk

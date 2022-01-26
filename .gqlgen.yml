@@ -1,0 +1,16 @@
+schema:
+  - ./api/gql/**/*.graphql
+
+exec:
+  filename: internal/handlers/gql/runtime/generated.go
+  package: runtime
+
+model:
+  filename: internal/handlers/gql/model/generated.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  dir: internal/handlers/gql/resolver
+  package: resolver
+  filename_template: "{name}.go"

@@ -1,0 +1,5 @@
+type UserMutation
+
+extend type Mutation {
+    user: UserMutation!
+}
