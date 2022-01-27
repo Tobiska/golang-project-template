@@ -27,10 +27,10 @@ type (
 	PG struct {
 		Host             string `yaml:"host" env:"POSTGRES_HOST"`
 		DbName           string `yaml:"db_name" env:"POSTGRES_DB"`
-		Username         string `yaml:"username" env:"POSTGRES_USER"`
+		Username         string `yaml:"username" env:"POSTGRES_USERNAME"`
 		Password         string `yaml:"password" env:"POSTGRES_PASSWORD"`
 		Port             string `yaml:"port" env:"POSTGRES_PORT"`
-		AttemptToConnect int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPT"`
+		AttemptToConnect int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPTS"`
 	}
 )
 

@@ -1,17 +1,19 @@
 package resolver
 
-import "golang-project-template/internal/app"
+import (
+	"golang-project-template/internal/composites"
+)
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	env *app.Env
+	Env *composites.Env
 }
 
-func NewResolver(env *app.Env) *Resolver {
+func NewResolver(env *composites.Env) *Resolver {
 	return &Resolver{
-		env: env,
+		Env: env,
 	}
 }

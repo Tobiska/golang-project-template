@@ -5,13 +5,12 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"golang-project-template/internal/handlers/gql/model"
 	"golang-project-template/internal/handlers/gql/runtime"
 )
 
 func (r *mutationResolver) User(ctx context.Context) (*model.UserMutation, error) {
-	panic(fmt.Errorf("not implemented"))
+	return &model.UserMutation{}, nil
 }
 
 // UserMutation returns runtime.UserMutationResolver implementation.

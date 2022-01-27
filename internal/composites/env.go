@@ -1,4 +1,4 @@
-package app
+package composites
 
 import (
 	userServ "golang-project-template/internal/domains/user/service"

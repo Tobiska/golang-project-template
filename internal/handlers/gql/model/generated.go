@@ -10,6 +10,10 @@ type UserCreateResult interface {
 	IsUserCreateResult()
 }
 
+type UserFindResult interface {
+	IsUserFindResult()
+}
+
 type UserResolvingResult interface {
 	IsUserResolvingResult()
 }
@@ -28,8 +32,17 @@ type InternalErrorProblem struct {
 func (InternalErrorProblem) IsProblemInterface()    {}
 func (InternalErrorProblem) IsUserResolvingResult() {}
 func (InternalErrorProblem) IsUserCreateResult()    {}
+func (InternalErrorProblem) IsUserFindResult()      {}
+
+type NotFoundProblem struct {
+	Message string `json:"message"`
+}
+
+func (NotFoundProblem) IsProblemInterface() {}
+func (NotFoundProblem) IsUserFindResult()   {}
 
 type User struct {
+	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
@@ -49,6 +62,16 @@ type UserCreateOk struct {
 
 func (UserCreateOk) IsUserCreateResult() {}
 
+type UserFindOk struct {
+	User *User `json:"user"`
+}
+
+func (UserFindOk) IsUserFindResult() {}
+
 type UserMutation struct {
 	Create UserCreateResult `json:"create"`
+}
+
+type UserQuery struct {
+	FindByID *User `json:"findById"`
 }

@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"golang-project-template/config"
+	"golang-project-template/internal/composites"
 	userServ "golang-project-template/internal/domains/user/service"
-	"golang-project-template/internal/handlers/gql"
 	res "golang-project-template/internal/handlers/gql/resolver"
 	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
 	"golang-project-template/pkg/db/postgres"
@@ -18,7 +18,7 @@ func Run(cfg *config.Config) {
 
 	router := gin.Default()
 
-	postgreSQLClient, err := postgres.NewClient(context.TODO(), cfg.AttemptToConnect, *cfg)
+	postgreSQLClient, err := postgres.NewClient(context.TODO(), cfg.PG.AttemptToConnect, *cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,10 +26,10 @@ func Run(cfg *config.Config) {
 	userRepository := userRepo.NewRepository(postgreSQLClient)
 	userService := userServ.New(userRepository)
 
-	env := NewEnv(userService)
+	env := composites.NewEnv(userService)
 	resolver := res.NewResolver(env)
 
-	gqlRouter := gql.NewRouter(resolver)
+	gqlRouter := res.NewRouter(resolver)
 	gqlRouter.Register(router)
 
 	srv := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))

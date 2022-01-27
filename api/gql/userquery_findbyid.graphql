@@ -1,0 +1,15 @@
+extend type UserQuery {
+    findById(
+        id: Int!
+    ): User! @goField(forceResolver: true)
+}
+
+type UserFindOk {
+    user: User!
+}
+
+
+union UserFindResult =
+        | InternalErrorProblem
+        | NotFoundProblem
+        | UserFindOk

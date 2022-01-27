@@ -5,3 +5,7 @@ interface ProblemInterface {
 type InternalErrorProblem implements ProblemInterface {
     message: String!
 }
+
+type NotFoundProblem implements ProblemInterface {
+    message: String!
+}

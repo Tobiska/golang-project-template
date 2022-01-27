@@ -1,5 +1,5 @@
-type ArticleQuery
+type UserQuery
 
 extend type Query {
-    article6 ArticleQuery!
+    user: UserQuery!
 }

@@ -51,7 +51,7 @@ func (r *Repository) GetByEmail(ctx context.Context, email string) (*entity.User
 }
 func (r *Repository) CreateUser(ctx context.Context, user *entity.User) error {
 	q := `INSERT INTO users 
-					(name, email, password)
+					(name, email, password_encrypted)
 		  VALUES 
 					($1, $2, $3)
 		  RETURNING id`
