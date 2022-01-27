@@ -1,5 +1,7 @@
 package config
 
+import "github.com/ilyakaznacheev/cleanenv"
+
 type (
 	Config struct {
 		App  `yaml:"app"`
@@ -23,9 +25,26 @@ type (
 	}
 
 	PG struct {
-		DbName   string `yaml:"db_name" env:"PG_DATABASE_NAME"`
-		Username string `yaml:"username" env:"PG_USERNAME"`
-		Password string `yaml:"password" env:"PG_PASSWORD"`
-		Port     string `yaml:"port" env:"PG_PORT"`
+		Host             string `yaml:"host" env:"POSTGRES_HOST"`
+		DbName           string `yaml:"db_name" env:"POSTGRES_DB"`
+		Username         string `yaml:"username" env:"POSTGRES_USER"`
+		Password         string `yaml:"password" env:"POSTGRES_PASSWORD"`
+		Port             string `yaml:"port" env:"POSTGRES_PORT"`
+		AttemptToConnect int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPT"`
 	}
 )
+
+func NewConfig() (*Config, error) {
+	cfg := &Config{}
+
+	if err := cleanenv.ReadConfig(".env", cfg); err != nil {
+		return cfg, err
+	}
+
+	if err := cleanenv.ReadEnv(cfg); err != nil {
+		return cfg, err
+	}
+
+	return cfg, nil
+
+}

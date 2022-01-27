@@ -1,20 +1,41 @@
 package app
 
-import "golang-project-template/config"
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+	"golang-project-template/config"
+	userService "golang-project-template/internal/domains/user/service"
+	"golang-project-template/internal/handlers/gql"
+	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
+	"golang-project-template/pkg/db/postgres"
+	"golang-project-template/pkg/httpserver"
+	"log"
+)
 
 func Run(cfg *config.Config) {
 	//TODO add logger
 
-	//TODO add router
+	router := gin.Default()
 
-	//TODO add postgres client
+	postgreSQLClient, err := postgres.NewClient(context.TODO(), cfg.AttemptToConnect, *cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	//TODO add use_case user
+	userRepository := userRepo.NewRepository(postgreSQLClient)
+	userService.New(userRepository)
 
-	//TODO add use_case group
+	gqlRouter := gql.NewRouter()
+	gqlRouter.Register(router)
 
-	//TODO add AMQ Kafka server
+	srv := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
 
-	//TODO add http server
+	select {
+	case n := <-srv.Notify():
+		log.Println(n)
+	}
 
+	if err := srv.Shutdown(); err != nil {
+		log.Fatal(err)
+	}
 }

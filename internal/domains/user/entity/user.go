@@ -2,6 +2,7 @@ package entity
 
 import (
 	"golang-project-template/internal/domains/group/entity"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -12,4 +13,21 @@ type User struct {
 	Password          string `json:"password,omitempty"`
 	PasswordEncrypted string `json:"-"`
 	Group             *entity.Group
+}
+
+func (u *User) EncryptPassword() error {
+	enc, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+	u.PasswordEncrypted = string(enc)
+	if err := u.SanitizeUser(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *User) SanitizeUser() error {
+	u.Password = ""
+	return nil
 }
