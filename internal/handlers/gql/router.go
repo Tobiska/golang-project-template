@@ -8,20 +8,22 @@ import (
 	"golang-project-template/internal/handlers/gql/resolver"
 )
 
-type Router struct{}
+type Router struct {
+	resolver *resolver.Resolver
+}
 
 func (r *Router) Register(router *gin.Engine) {
 	router.GET("/", playgroundHandler())
 	router.POST("/query", graphqlHandler())
 }
 
-func NewRouter() *Router {
-	return &Router{}
+func NewRouter(resolver *resolver.Resolver) *Router {
+	return &Router{
+		resolver: resolver,
+	}
 }
 
 func graphqlHandler() gin.HandlerFunc {
-	// NewExecutableSchema and Config are in the generated.go file
-	// Resolver is in the resolver.go file
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
 
 	return func(c *gin.Context) {
