@@ -4,14 +4,22 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"golang-project-template/config"
-	"golang-project-template/internal/composites"
-	userServ "golang-project-template/internal/domains/user/service"
+	"golang-project-template/internal/domains"
 	res "golang-project-template/internal/handlers/gql/resolver"
-	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
 	"golang-project-template/pkg/auth"
 	"golang-project-template/pkg/db/postgres"
 	"golang-project-template/pkg/httpserver"
 	"log"
+)
+
+import (
+	groupServ "golang-project-template/internal/domains/group/service"
+	groupRepo "golang-project-template/internal/infrastructure/group/repository/sql"
+)
+
+import (
+	userServ "golang-project-template/internal/domains/user/service"
+	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
 )
 
 const (
@@ -33,10 +41,22 @@ func Run(cfg *config.Config) {
 		log.Fatal(err)
 	}
 
-	userRepository := userRepo.NewRepository(postgreSQLClient)
-	userService := userServ.New(userRepository, jwtTokenManager)
+	var env *domains.Env //TODO think about it!!!
 
-	env := composites.NewEnv(userService)
+	//User
+
+	userRepository := userRepo.NewRepository(postgreSQLClient)
+	userService := userServ.New(userRepository, jwtTokenManager, env)
+
+	//Group
+
+	groupRepository := groupRepo.NewRepository(postgreSQLClient)
+	groupService := groupServ.NewGroupService(groupRepository, env)
+
+	//Session
+
+	//Task
+	env = domains.NewEnv(userService, groupService)
 	resolver := res.NewResolver(env)
 
 	gqlRouter := res.NewRouter(resolver)

@@ -11,6 +11,6 @@ type (
 		GetById(ctx context.Context, id int) (*entity.User, error)
 		GetByEmail(ctx context.Context, email string) (*entity.User, error)
 		CreateUser(ctx context.Context, user *entity.User) error
-		UpdateUser(ctx context.Context, id int) (*entity.User, error)
+		UpdateUser(ctx context.Context, user *entity.User) (*entity.User, error)
 	}
 )

@@ -60,6 +60,10 @@ func (r *Repository) CreateUser(ctx context.Context, user *entity.User) error {
 	}
 	return nil
 }
-func (r *Repository) UpdateUser(ctx context.Context, id int) (*entity.User, error) {
-	panic("implement me !!!")
+func (r *Repository) UpdateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+	q := `UPDATE users SET 
+			username=$1, email=$2, group_id=$3
+		 WHERE users.id=$4`
+	r.client.QueryRow(ctx, q, user.Username, user.Email, user.Group.Uuid)
+	return user, nil
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"golang-project-template/internal/domains"
 	"golang-project-template/internal/domains/user/entity"
 	"golang-project-template/pkg/auth"
 	"strconv"
@@ -11,12 +12,14 @@ import (
 type Service struct {
 	repository   Repository
 	tokenManager auth.TokenManager
+	env          *domains.Env
 }
 
-func New(repository Repository, manager auth.TokenManager) *Service {
+func New(repository Repository, manager auth.TokenManager, env *domains.Env) *Service {
 	return &Service{
 		repository:   repository,
 		tokenManager: manager,
+		env:          env,
 	}
 }
 
@@ -68,4 +71,14 @@ func (s *Service) SignIn(ctx context.Context, dto SignInDTO) (*entity.User, stri
 	}
 
 	return u, jwt, nil
+}
+
+func (s *Service) AttachGroup(ctx context.Context, dto AttachGroupDTO) error {
+	u := &entity.User{
+		Username: dto.User.Username,
+		Email:    dto.User.Email,
+		Group:    dto.Group,
+	}
+	s.repository.UpdateUser(ctx, u)
+	return nil
 }
