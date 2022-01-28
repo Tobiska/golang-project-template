@@ -1,7 +1,7 @@
 extend type UserQuery {
     findById(
         id: Int!
-    ): User! @goField(forceResolver: true)
+    ): User! @goField(forceResolver: true) @isAuthJWT
 }
 
 type UserFindOk {

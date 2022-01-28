@@ -11,3 +11,5 @@ directive @goField(
 directive @inputUnion on INPUT_FIELD_DEFINITION
 
 directive @sortRankInput on INPUT_FIELD_DEFINITION
+
+directive @isAuthJWT on FIELD_DEFINITION

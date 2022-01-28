@@ -35,16 +35,16 @@ func (r *Repository) GetAll(ctx context.Context, limit, offset int) ([]*entity.U
 
 func (r *Repository) GetById(ctx context.Context, id int) (*entity.User, error) {
 	u := &entity.User{}
-	row := r.client.QueryRow(ctx, `SELECT users.id, users.name, users.email, users.role FROM users WHERE users.id=$1`, id)
-	if err := row.Scan(u.Id, u.Username, u.Email, u.Role); err != nil {
+	row := r.client.QueryRow(ctx, `SELECT users.id, users.name, users.email FROM users WHERE users.id=$1`, id)
+	if err := row.Scan(u.Id, u.Username, u.Email); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
 func (r *Repository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
 	u := &entity.User{}
-	row := r.client.QueryRow(ctx, `SELECT users.id, users.name, users.email, users.role FROM users WHERE users.email=$1`, email)
-	if err := row.Scan(u.Id, u.Username, u.Email, u.Role); err != nil {
+	row := r.client.QueryRow(ctx, `SELECT users.id, users.name, users.email FROM users WHERE users.email=$1`, email)
+	if err := row.Scan(&u.Id, &u.Username, &u.Email); err != nil {
 		return nil, err
 	}
 	return u, nil

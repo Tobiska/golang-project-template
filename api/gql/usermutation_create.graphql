@@ -1,7 +1,7 @@
 extend type UserMutation {
     create(
         input: UserCreateInput!
-    ): UserCreateResult! @goField(forceResolver: true)
+    ): UserCreateResult! @goField(forceResolver: true) @isAuthJWT
 }
 
 input UserCreateInput {

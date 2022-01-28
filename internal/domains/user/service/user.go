@@ -53,7 +53,7 @@ func (s *Service) UpdateUser(ctx context.Context, dto UpdateDTO) (*entity.User, 
 }
 
 func (s *Service) SignIn(ctx context.Context, dto SignInDTO) (*entity.User, string, error) {
-	u, err := s.repository.GetByEmail(ctx, dto.Username)
+	u, err := s.repository.GetByEmail(ctx, dto.Email)
 	if err != nil {
 		return nil, "", err
 	}

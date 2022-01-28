@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ctxKeyUser ctxKey = iota
+	CtxKeyUser ctxKey = iota
 )
 
 type ctxKey int8
@@ -40,7 +40,7 @@ func AuthenticateUser(service *service.Service, manager auth.TokenManager) gin.H
 
 		user, err := service.GetById(c.Request.Context(), userId)
 
-		ctx := context.WithValue(c.Request.Context(), ctxKeyUser, user)
+		ctx := context.WithValue(c.Request.Context(), CtxKeyUser, user)
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	})
