@@ -1,6 +1,6 @@
 package entity
 
 type Group struct {
-	Uuid string
-	Name string
+	Uuid string `json:"uuid"`
+	Name string `json:"name"`
 }
