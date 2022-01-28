@@ -6,6 +6,10 @@ type ProblemInterface interface {
 	IsProblemInterface()
 }
 
+type TokenResolvingResult interface {
+	IsTokenResolvingResult()
+}
+
 type UserCreateResult interface {
 	IsUserCreateResult()
 }
@@ -16,6 +20,10 @@ type UserFindResult interface {
 
 type UserResolvingResult interface {
 	IsUserResolvingResult()
+}
+
+type UserSignInResult interface {
+	IsUserSignInResult()
 }
 
 type EmailValidationProblem struct {
@@ -29,10 +37,12 @@ type InternalErrorProblem struct {
 	Message string `json:"message"`
 }
 
-func (InternalErrorProblem) IsProblemInterface()    {}
-func (InternalErrorProblem) IsUserResolvingResult() {}
-func (InternalErrorProblem) IsUserCreateResult()    {}
-func (InternalErrorProblem) IsUserFindResult()      {}
+func (InternalErrorProblem) IsProblemInterface()     {}
+func (InternalErrorProblem) IsTokenResolvingResult() {}
+func (InternalErrorProblem) IsUserResolvingResult()  {}
+func (InternalErrorProblem) IsUserCreateResult()     {}
+func (InternalErrorProblem) IsUserSignInResult()     {}
+func (InternalErrorProblem) IsUserFindResult()       {}
 
 type NotFoundProblem struct {
 	Message string `json:"message"`
@@ -40,6 +50,12 @@ type NotFoundProblem struct {
 
 func (NotFoundProblem) IsProblemInterface() {}
 func (NotFoundProblem) IsUserFindResult()   {}
+
+type Token struct {
+	AccessToken string `json:"accessToken"`
+}
+
+func (Token) IsTokenResolvingResult() {}
 
 type User struct {
 	ID       int    `json:"id"`
@@ -70,8 +86,21 @@ func (UserFindOk) IsUserFindResult() {}
 
 type UserMutation struct {
 	Create UserCreateResult `json:"create"`
+	SignIn UserSignInResult `json:"signIn"`
 }
 
 type UserQuery struct {
 	FindByID *User `json:"findById"`
 }
+
+type UserSignInInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserSignOk struct {
+	User  *User  `json:"user"`
+	Token *Token `json:"token"`
+}
+
+func (UserSignOk) IsUserSignInResult() {}

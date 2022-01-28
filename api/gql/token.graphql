@@ -1,0 +1,6 @@
+type Token {
+    accessToken: String!
+}
+union TokenResolvingResult =
+    | InternalErrorProblem
+    | Token

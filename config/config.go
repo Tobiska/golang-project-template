@@ -8,6 +8,7 @@ type (
 		HTTP `yaml:"http"`
 		PG   `yaml:"postgres"`
 		Log  `yaml:"logger"`
+		Auth `yaml:"auth"`
 	}
 
 	App struct {
@@ -22,6 +23,10 @@ type (
 
 	Log struct {
 		Level string `yaml:"log_level" env:"LOG_LEVEL"`
+	}
+
+	Auth struct {
+		TTL string `yaml:"ttl" env:"AUTH_TTL"` //TODD FIX move env variable
 	}
 
 	PG struct {

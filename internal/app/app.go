@@ -8,9 +8,14 @@ import (
 	userServ "golang-project-template/internal/domains/user/service"
 	res "golang-project-template/internal/handlers/gql/resolver"
 	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
+	"golang-project-template/pkg/auth"
 	"golang-project-template/pkg/db/postgres"
 	"golang-project-template/pkg/httpserver"
 	"log"
+)
+
+const (
+	signingKey = "demoApiQAZWSXEDC" //TODO FIX move to env variables
 )
 
 func Run(cfg *config.Config) {
@@ -18,19 +23,24 @@ func Run(cfg *config.Config) {
 
 	router := gin.Default()
 
+	jwtTokenManager, err := auth.NewManager(signingKey, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	postgreSQLClient, err := postgres.NewClient(context.TODO(), cfg.PG.AttemptToConnect, *cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	userRepository := userRepo.NewRepository(postgreSQLClient)
-	userService := userServ.New(userRepository)
+	userService := userServ.New(userRepository, jwtTokenManager)
 
 	env := composites.NewEnv(userService)
 	resolver := res.NewResolver(env)
 
 	gqlRouter := res.NewRouter(resolver)
-	gqlRouter.Register(router)
+	gqlRouter.Register(router, jwtTokenManager)
 
 	srv := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
 

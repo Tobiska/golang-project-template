@@ -27,6 +27,10 @@ func (u *User) EncryptPassword() error {
 	return nil
 }
 
+func (u *User) CheckPassword(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.PasswordEncrypted), []byte(password)) == nil
+}
+
 func (u *User) SanitizeUser() error {
 	u.Password = ""
 	return nil

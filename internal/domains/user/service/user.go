@@ -2,16 +2,21 @@ package service
 
 import (
 	"context"
+	"errors"
 	"golang-project-template/internal/domains/user/entity"
+	"golang-project-template/pkg/auth"
+	"strconv"
 )
 
 type Service struct {
-	repository Repository
+	repository   Repository
+	tokenManager auth.TokenManager
 }
 
-func New(repository Repository) *Service {
+func New(repository Repository, manager auth.TokenManager) *Service {
 	return &Service{
-		repository: repository,
+		repository:   repository,
+		tokenManager: manager,
 	}
 }
 
@@ -45,4 +50,22 @@ func (s *Service) CreateUser(ctx context.Context, dto CreateDTO) (*entity.User, 
 
 func (s *Service) UpdateUser(ctx context.Context, dto UpdateDTO) (*entity.User, error) {
 	panic("implement me!!!")
+}
+
+func (s *Service) SignIn(ctx context.Context, dto SignInDTO) (*entity.User, string, error) {
+	u, err := s.repository.GetByEmail(ctx, dto.Username)
+	if err != nil {
+		return nil, "", err
+	}
+
+	if res := u.CheckPassword(dto.Password); res == true {
+		return nil, "", errors.New("Login or Password invalid")
+	}
+
+	jwt, err := s.tokenManager.NewJWT(strconv.Itoa(u.Id))
+	if err != nil {
+		return nil, "", err
+	}
+
+	return u, jwt, nil
 }

@@ -1,0 +1,19 @@
+extend type UserMutation {
+    signIn(
+        input: UserSignInInput!
+    ): UserSignInResult! @goField(forceResolver: true)
+}
+
+input UserSignInInput {
+    email: String!
+    password: String!
+}
+
+type UserSignOk {
+    user: User!
+    token: Token!
+}
+
+union UserSignInResult =
+        | InternalErrorProblem
+        | UserSignOk
