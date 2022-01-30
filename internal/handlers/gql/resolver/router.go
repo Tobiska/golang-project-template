@@ -15,7 +15,8 @@ type Router struct {
 }
 
 func (r *Router) Register(router *gin.Engine, manager *auth.Manager) {
-	router.Use(middleware.AuthenticateUser(r.resolver.Env.UserService, manager))
+	router.Use(middleware.DataLoadersInjector(r.resolver.Env))
+	router.Use(middleware.AuthenticateUser(r.resolver.Env.Services.User, manager))
 	router.GET("/", r.playgroundHandler())
 	router.POST("/query", r.graphqlHandler())
 }
@@ -39,10 +40,10 @@ func newSchemaConfig(resolver *Resolver) runtime.Config {
 	cfg := runtime.Config{Resolvers: resolver}
 
 	cfg.Directives.IsAuthJWT = directives.NewAuthJWTDirective()
+	cfg.Directives.HasRole = directives.NewHasRoleDirective()
 	return cfg
 }
 
-// Defining the Playground handler
 func (r *Router) playgroundHandler() gin.HandlerFunc {
 	h := playground.Handler("GraphQL", "/query")
 

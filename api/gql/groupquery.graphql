@@ -1,0 +1,6 @@
+type GroupQuery
+
+extend type Query {
+    group: GroupQuery
+    groups: [Group!]!
+}

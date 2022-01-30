@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"golang-project-template/internal/domains/group/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -12,8 +11,13 @@ type User struct {
 	Username          string `json:"username,omitempty"`
 	Password          string `json:"password,omitempty"`
 	PasswordEncrypted string `json:"-"`
-	Group             *entity.Group
+	GroupID           string `json:"group_id"`
 }
+
+const (
+	Admin  string = "admin"
+	Client string = "client"
+)
 
 func (u *User) EncryptPassword() error {
 	enc, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
@@ -34,4 +38,12 @@ func (u *User) CheckPassword(password string) bool {
 func (u *User) SanitizeUser() error {
 	u.Password = ""
 	return nil
+}
+
+func (u *User) IsAdmin() bool {
+	return u.Role == Admin
+}
+
+func (u *User) IsClient() bool {
+	return u.Role == Client
 }

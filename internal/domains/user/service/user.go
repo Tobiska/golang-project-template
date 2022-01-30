@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"golang-project-template/internal/domains"
 	"golang-project-template/internal/domains/user/entity"
 	"golang-project-template/pkg/auth"
 	"strconv"
@@ -12,14 +11,12 @@ import (
 type Service struct {
 	repository   Repository
 	tokenManager auth.TokenManager
-	env          *domains.Env
 }
 
-func New(repository Repository, manager auth.TokenManager, env *domains.Env) *Service {
+func New(repository Repository, manager auth.TokenManager) *Service {
 	return &Service{
 		repository:   repository,
 		tokenManager: manager,
-		env:          env,
 	}
 }
 
@@ -29,6 +26,22 @@ func (s *Service) GetAll(ctx context.Context, limit, offset int) ([]*entity.User
 		return users, err
 	}
 	return users, nil
+}
+
+func (s *Service) GetUsersByGroupId(ctx context.Context, uuid string) ([]*entity.User, error) {
+	users, err := s.repository.GetUsersByGroupId(ctx, uuid)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (s *Service) GetByIds(ctx context.Context, ids ...int) ([]*entity.User, error) {
+	us, err := s.repository.GetByIds(ctx, ids...)
+	if err != nil {
+		return nil, err
+	}
+	return us, nil
 }
 
 func (s *Service) GetById(ctx context.Context, id int) (*entity.User, error) {
@@ -44,6 +57,10 @@ func (s *Service) CreateUser(ctx context.Context, dto CreateDTO) (*entity.User, 
 		Username: dto.Username,
 		Password: dto.Password,
 		Email:    dto.Email,
+		Role:     dto.Role,
+	}
+	if err := u.EncryptPassword(); err != nil {
+		return nil, err
 	}
 	if err := s.repository.CreateUser(ctx, u); err != nil {
 		return nil, err
@@ -61,7 +78,7 @@ func (s *Service) SignIn(ctx context.Context, dto SignInDTO) (*entity.User, stri
 		return nil, "", err
 	}
 
-	if res := u.CheckPassword(dto.Password); res == true {
+	if res := u.CheckPassword(dto.Password); res != true {
 		return nil, "", errors.New("Login or Password invalid")
 	}
 
@@ -73,12 +90,10 @@ func (s *Service) SignIn(ctx context.Context, dto SignInDTO) (*entity.User, stri
 	return u, jwt, nil
 }
 
-func (s *Service) AttachGroup(ctx context.Context, dto AttachGroupDTO) error {
-	u := &entity.User{
-		Username: dto.User.Username,
-		Email:    dto.User.Email,
-		Group:    dto.Group,
+func (s *Service) AttachGroup(ctx context.Context, u *entity.User) error {
+	_, err := s.repository.UpdateUser(ctx, u)
+	if err != nil {
+		return err
 	}
-	s.repository.UpdateUser(ctx, u)
 	return nil
 }

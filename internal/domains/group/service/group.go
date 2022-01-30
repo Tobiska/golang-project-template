@@ -2,25 +2,24 @@ package service
 
 import (
 	"context"
-	"golang-project-template/internal/domains"
 	"golang-project-template/internal/domains/group/entity"
-	"golang-project-template/internal/domains/user/service"
+	userServ "golang-project-template/internal/domains/user/service"
 )
 
 type Service struct {
-	repository Repository
-	env        *domains.Env
+	repository  Repository
+	userService *userServ.Service
 }
 
-func NewGroupService(repository Repository, env *domains.Env) *Service {
+func NewGroupService(repository Repository, service *userServ.Service) *Service {
 	return &Service{
-		repository: repository,
-		env:        env,
+		repository:  repository,
+		userService: service,
 	}
 }
 
-func (s *Service) GetAll(ctx context.Context, limit, offset int) ([]*entity.Group, error) {
-	groups, err := s.repository.GetAll(ctx, limit, offset)
+func (s *Service) GetAll(ctx context.Context) ([]*entity.Group, error) {
+	groups, err := s.repository.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -38,20 +37,14 @@ func (s *Service) GetByUuid(ctx context.Context, uuid string) (*entity.Group, er
 
 func (s *Service) Create(ctx context.Context, dto CreateDTO) (*entity.Group, error) {
 	g := &entity.Group{
-		Name: dto.Name,
+		Name:  dto.Name,
+		Owner: dto.GroupOwner,
 	}
 	if err := s.repository.CreateGroup(ctx, g); err != nil {
 		return nil, err
 	}
-
-	updateUserDto := service.UpdateDTO{
-		Username: dto.GroupOwner.Username,
-		Group:    g,
-		Email:    dto.GroupOwner.Email,
-	}
-	u, err := s.env.UserService.UpdateUser(ctx, updateUserDto)
-	dto.GroupOwner.Id = u.Id
-	if err != nil {
+	g.Owner.GroupID = g.Uuid
+	if err := s.userService.AttachGroup(ctx, dto.GroupOwner); err != nil {
 		return nil, err
 	}
 

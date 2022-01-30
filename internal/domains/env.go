@@ -6,13 +6,19 @@ import (
 )
 
 type Env struct {
-	UserService  *userServ.Service
-	GroupService *groupServ.Service
+	Services *Services
+}
+
+type Services struct {
+	User  *userServ.Service
+	Group *groupServ.Service
 }
 
 func NewEnv(us *userServ.Service, gs *groupServ.Service) *Env {
 	return &Env{
-		UserService:  us,
-		GroupService: gs,
+		Services: &Services{
+			User:  us,
+			Group: gs,
+		},
 	}
 }

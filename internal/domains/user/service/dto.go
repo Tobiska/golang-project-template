@@ -15,6 +15,7 @@ type (
 		Username string
 		Password string
 		Email    string
+		Role     string
 	}
 
 	UpdateDTO struct {

@@ -46,12 +46,12 @@ func Run(cfg *config.Config) {
 	//User
 
 	userRepository := userRepo.NewRepository(postgreSQLClient)
-	userService := userServ.New(userRepository, jwtTokenManager, env)
+	userService := userServ.New(userRepository, jwtTokenManager)
 
 	//Group
 
 	groupRepository := groupRepo.NewRepository(postgreSQLClient)
-	groupService := groupServ.NewGroupService(groupRepository, env)
+	groupService := groupServ.NewGroupService(groupRepository, userService)
 
 	//Session
 

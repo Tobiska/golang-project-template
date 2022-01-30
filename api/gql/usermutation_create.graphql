@@ -1,13 +1,14 @@
 extend type UserMutation {
     create(
         input: UserCreateInput!
-    ): UserCreateResult! @goField(forceResolver: true) @isAuthJWT
+    ): UserCreateResult! @goField(forceResolver: true)
 }
 
 input UserCreateInput {
     username: String!
     email: String!
     password: String!
+    role: Role!
 }
 
 type UserCreateOk {

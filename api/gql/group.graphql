@@ -1,0 +1,10 @@
+type Group {
+    uuid: String!
+    name: String!
+    ownerId: Int!
+    owner: User! @goField(forceResolver: true)
+}
+
+union GroupResolvingResult =
+    | Group
+    | InternalErrorProblem

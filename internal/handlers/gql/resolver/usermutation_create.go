@@ -15,8 +15,9 @@ func (r *userMutationResolver) Create(ctx context.Context, obj *model.UserMutati
 		Username: input.Username,
 		Password: input.Password,
 		Email:    input.Email,
+		Role:     input.Role.String(),
 	}
-	u, err := r.Env.UserService.CreateUser(ctx, dto)
+	u, err := r.Env.Services.User.CreateUser(ctx, dto)
 	if err != nil {
 		return nil, err
 	}
