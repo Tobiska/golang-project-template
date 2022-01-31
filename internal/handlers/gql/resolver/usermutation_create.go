@@ -27,11 +27,11 @@ func (r *userMutationResolver) Create(ctx context.Context, obj *model.UserMutati
 		}, nil
 	}
 
-	//if errors.Is(err, userServ.UserValidationError) {
-	//	return model.EmailValidationProblem{
-	//		Message: err.Error(),
-	//	}, nil
-	//}
+	if errors.Is(err, service.UserValidationError) {
+		return model.ValidationErrorProblem{
+			Message: err.Error(),
+		}, nil
+	}
 
 	if err != nil {
 		return nil, err
