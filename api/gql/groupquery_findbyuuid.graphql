@@ -1,6 +1,6 @@
 extend type GroupQuery {
     findByUuid(
-        Uuid: String!
+        Uuid: Uuid!
     ): GroupFindResult! @goField(forceResolver: true) @isAuthJWT
 }
 
@@ -8,7 +8,6 @@ type GroupFindOk {
     group: Group!
     users: [User!]! @goField(forceResolver: true)
 }
-
 
 union GroupFindResult =
     | InternalErrorProblem

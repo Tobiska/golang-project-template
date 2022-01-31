@@ -15,6 +15,11 @@ type UserCreateOk {
     user: User!
 }
 
+type ValidationErrorProblem implements ProblemInterface{
+    message: String!
+}
+
 union UserCreateResult =
         | InternalErrorProblem
+        | ValidationErrorProblem
         | UserCreateOk

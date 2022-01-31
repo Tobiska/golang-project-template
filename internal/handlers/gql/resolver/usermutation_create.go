@@ -5,6 +5,8 @@ package resolver
 
 import (
 	"context"
+	"errors"
+	"golang-project-template/internal/domains/apperror"
 	"golang-project-template/internal/domains/user/service"
 	"golang-project-template/internal/handlers/gql/feature/user"
 	"golang-project-template/internal/handlers/gql/model"
@@ -18,6 +20,19 @@ func (r *userMutationResolver) Create(ctx context.Context, obj *model.UserMutati
 		Role:     input.Role.String(),
 	}
 	u, err := r.Env.Services.User.CreateUser(ctx, dto)
+
+	if errors.Is(err, apperror.InternalError) {
+		return model.InternalErrorProblem{
+			Message: err.Error(),
+		}, nil
+	}
+
+	//if errors.Is(err, userServ.UserValidationError) {
+	//	return model.EmailValidationProblem{
+	//		Message: err.Error(),
+	//	}, nil
+	//}
+
 	if err != nil {
 		return nil, err
 	}

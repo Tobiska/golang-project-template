@@ -163,6 +163,13 @@ type UserSignOk struct {
 
 func (UserSignOk) IsUserSignInResult() {}
 
+type ValidationErrorProblem struct {
+	Message string `json:"message"`
+}
+
+func (ValidationErrorProblem) IsProblemInterface() {}
+func (ValidationErrorProblem) IsUserCreateResult() {}
+
 type Role string
 
 const (

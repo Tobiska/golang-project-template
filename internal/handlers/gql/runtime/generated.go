@@ -134,6 +134,10 @@ type ComplexityRoot struct {
 		Token func(childComplexity int) int
 		User  func(childComplexity int) int
 	}
+
+	ValidationErrorProblem struct {
+		Message func(childComplexity int) int
+	}
 }
 
 type GroupResolver interface {
@@ -415,6 +419,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserSignOk.User(childComplexity), true
 
+	case "ValidationErrorProblem.message":
+		if e.complexity.ValidationErrorProblem.Message == nil {
+			break
+		}
+
+		return e.complexity.ValidationErrorProblem.Message(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -507,7 +518,7 @@ scalar Upload
 scalar Url
 scalar Uuid`, BuiltIn: false},
 	{Name: "api/gql/group.graphql", Input: `type Group {
-    uuid: String!
+    uuid: Uuid!
     name: String!
     ownerId: Int!
     owner: User! @goField(forceResolver: true)
@@ -546,7 +557,7 @@ extend type Query {
 }`, BuiltIn: false},
 	{Name: "api/gql/groupquery_findbyuuid.graphql", Input: `extend type GroupQuery {
     findByUuid(
-        Uuid: String!
+        Uuid: Uuid!
     ): GroupFindResult! @goField(forceResolver: true) @isAuthJWT
 }
 
@@ -554,7 +565,6 @@ type GroupFindOk {
     group: Group!
     users: [User!]! @goField(forceResolver: true)
 }
-
 
 union GroupFindResult =
     | InternalErrorProblem
@@ -623,8 +633,13 @@ type UserCreateOk {
     user: User!
 }
 
+type ValidationErrorProblem implements ProblemInterface{
+    message: String!
+}
+
 union UserCreateResult =
         | InternalErrorProblem
+        | ValidationErrorProblem
         | UserCreateOk`, BuiltIn: false},
 	{Name: "api/gql/usermutation_signin.graphql", Input: `extend type UserMutation {
     signIn(
@@ -708,7 +723,7 @@ func (ec *executionContext) field_GroupQuery_findByUuid_args(ctx context.Context
 	var arg0 string
 	if tmp, ok := rawArgs["Uuid"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Uuid"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNUuid2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -897,7 +912,7 @@ func (ec *executionContext) _Group_uuid(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNUuid2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Group_name(ctx context.Context, field graphql.CollectedField, obj *model.Group) (ret graphql.Marshaler) {
@@ -2051,6 +2066,41 @@ func (ec *executionContext) _UserSignOk_token(ctx context.Context, field graphql
 	res := resTmp.(*model.Token)
 	fc.Result = res
 	return ec.marshalNToken2ᚖgolangᚑprojectᚑtemplateᚋinternalᚋhandlersᚋgqlᚋmodelᚐToken(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ValidationErrorProblem_message(ctx context.Context, field graphql.CollectedField, obj *model.ValidationErrorProblem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ValidationErrorProblem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3388,6 +3438,13 @@ func (ec *executionContext) _ProblemInterface(ctx context.Context, sel ast.Selec
 			return graphql.Null
 		}
 		return ec._EmailValidationProblem(ctx, sel, obj)
+	case model.ValidationErrorProblem:
+		return ec._ValidationErrorProblem(ctx, sel, &obj)
+	case *model.ValidationErrorProblem:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ValidationErrorProblem(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -3427,6 +3484,13 @@ func (ec *executionContext) _UserCreateResult(ctx context.Context, sel ast.Selec
 			return graphql.Null
 		}
 		return ec._InternalErrorProblem(ctx, sel, obj)
+	case model.ValidationErrorProblem:
+		return ec._ValidationErrorProblem(ctx, sel, &obj)
+	case *model.ValidationErrorProblem:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ValidationErrorProblem(ctx, sel, obj)
 	case model.UserCreateOk:
 		return ec._UserCreateOk(ctx, sel, &obj)
 	case *model.UserCreateOk:
@@ -4321,6 +4385,37 @@ func (ec *executionContext) _UserSignOk(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var validationErrorProblemImplementors = []string{"ValidationErrorProblem", "ProblemInterface", "UserCreateResult"}
+
+func (ec *executionContext) _ValidationErrorProblem(ctx context.Context, sel ast.SelectionSet, obj *model.ValidationErrorProblem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, validationErrorProblemImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ValidationErrorProblem")
+		case "message":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._ValidationErrorProblem_message(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -5002,6 +5097,21 @@ func (ec *executionContext) marshalNUserSignInResult2golangᚑprojectᚑtemplate
 		return graphql.Null
 	}
 	return ec._UserSignInResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUuid2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUuid2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

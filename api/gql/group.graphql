@@ -1,5 +1,5 @@
 type Group {
-    uuid: String!
+    uuid: Uuid!
     name: String!
     ownerId: Int!
     owner: User! @goField(forceResolver: true)
