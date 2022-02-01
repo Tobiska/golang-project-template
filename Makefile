@@ -1,5 +1,6 @@
 .PHONY: build
 build:
+		go mod tidy
 		go build -v -o golang-project-template ./cmd/main.go
 
 .PHONY: gql-generate

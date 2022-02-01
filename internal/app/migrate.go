@@ -18,7 +18,8 @@ func init() {
 		log.Fatal(err)
 	}
 
-	if err := migration.Up(); err != nil {
+	err = migration.Up()
+	if err != nil && err.Error() != "no change" {
 		log.Fatal(err)
 	}
 }

@@ -13,7 +13,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data/
   app:
-    build: ./containers/v2
+    build: ./containers/v1
     container_name: app
     image: app
     ports:
@@ -22,5 +22,4 @@ services:
       - db
 
 volumes:
-  dbdata:
-   driver: local
+  data:

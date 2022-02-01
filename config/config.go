@@ -38,7 +38,7 @@ type (
 		Password            string `yaml:"password" env:"POSTGRES_PASSWORD"`
 		Port                string `yaml:"port" env:"POSTGRES_PORT"`
 		AttemptToConnect    int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPTS"`
-		MigrationsSourceURL string `yaml:"migrations_source_url" env:"MIGRATIONS_SOURCE_URL"`
+		MigrationsSourceURL string `yaml:"migrations_source_url" env:"POSTGRES_MIGRATIONS_SOURCE_URL"`
 	}
 )
 
@@ -54,7 +54,7 @@ func NewConfig() (*Config, error) { //TODO add logger
 	//	}
 	//})
 
-	if err := cleanenv.ReadConfig("config/.env", cfg); err != nil {
+	if err := cleanenv.ReadConfig(".env", cfg); err != nil {
 		return cfg, err
 	}
 

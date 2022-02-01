@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"golang-project-template/config"
 	"golang-project-template/pkg/utils"
 	"time"
@@ -27,7 +29,7 @@ func NewMigration(ctx context.Context, cfg *config.Config) (*Migration, error) {
 		}
 
 		return nil
-	}, cfg.PG.AttemptToConnect, 5*time.Second)
+	}, cfg.PG.AttemptToConnect, 3*time.Second)
 	if err != nil {
 		return nil, err
 	}
