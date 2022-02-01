@@ -2,6 +2,24 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type GroupCreateResult interface {
+	IsGroupCreateResult()
+}
+
+type GroupFindResult interface {
+	IsGroupFindResult()
+}
+
+type GroupResolvingResult interface {
+	IsGroupResolvingResult()
+}
+
 type ProblemInterface interface {
 	IsProblemInterface()
 }
@@ -33,10 +51,47 @@ type EmailValidationProblem struct {
 func (EmailValidationProblem) IsProblemInterface()    {}
 func (EmailValidationProblem) IsUserResolvingResult() {}
 
+type Group struct {
+	UUID    string `json:"uuid"`
+	Name    string `json:"name"`
+	OwnerID int    `json:"ownerId"`
+	Owner   *User  `json:"owner"`
+}
+
+func (Group) IsGroupResolvingResult() {}
+
+type GroupCreateInput struct {
+	Name string `json:"name"`
+}
+
+type GroupCreateOk struct {
+	Group *Group `json:"group"`
+}
+
+func (GroupCreateOk) IsGroupCreateResult() {}
+
+type GroupFindOk struct {
+	Group *Group  `json:"group"`
+	Users []*User `json:"users"`
+}
+
+func (GroupFindOk) IsGroupFindResult() {}
+
+type GroupMutation struct {
+	Create GroupCreateResult `json:"create"`
+}
+
+type GroupQuery struct {
+	FindByUUID GroupFindResult `json:"findByUuid"`
+}
+
 type InternalErrorProblem struct {
 	Message string `json:"message"`
 }
 
+func (InternalErrorProblem) IsGroupResolvingResult() {}
+func (InternalErrorProblem) IsGroupCreateResult()    {}
+func (InternalErrorProblem) IsGroupFindResult()      {}
 func (InternalErrorProblem) IsProblemInterface()     {}
 func (InternalErrorProblem) IsTokenResolvingResult() {}
 func (InternalErrorProblem) IsUserResolvingResult()  {}
@@ -48,6 +103,7 @@ type NotFoundProblem struct {
 	Message string `json:"message"`
 }
 
+func (NotFoundProblem) IsGroupFindResult()  {}
 func (NotFoundProblem) IsProblemInterface() {}
 func (NotFoundProblem) IsUserFindResult()   {}
 
@@ -62,6 +118,7 @@ type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
+	Role     Role   `json:"role"`
 }
 
 func (User) IsUserResolvingResult() {}
@@ -70,6 +127,7 @@ type UserCreateInput struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Role     Role   `json:"role"`
 }
 
 type UserCreateOk struct {
@@ -104,3 +162,51 @@ type UserSignOk struct {
 }
 
 func (UserSignOk) IsUserSignInResult() {}
+
+type ValidationErrorProblem struct {
+	Message string `json:"message"`
+}
+
+func (ValidationErrorProblem) IsProblemInterface() {}
+func (ValidationErrorProblem) IsUserCreateResult() {}
+
+type Role string
+
+const (
+	RoleAdmin  Role = "Admin"
+	RoleClient Role = "Client"
+)
+
+var AllRole = []Role{
+	RoleAdmin,
+	RoleClient,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleAdmin, RoleClient:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}

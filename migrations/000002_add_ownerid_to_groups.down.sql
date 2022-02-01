@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE users DROP COLUMN owner_id RESTRICT;
+
+COMMIT;

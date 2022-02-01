@@ -3,6 +3,12 @@ type User {
     username: String!
     password: String!
     email: String!
+    role: Role!
+}
+
+enum Role {
+    Admin,
+    Client
 }
 
 type EmailValidationProblem implements ProblemInterface {

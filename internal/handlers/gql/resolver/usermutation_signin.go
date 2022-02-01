@@ -15,7 +15,7 @@ func (r *userMutationResolver) SignIn(ctx context.Context, obj *model.UserMutati
 		Email:    input.Email,
 		Password: input.Password,
 	}
-	u, token, err := r.Env.UserService.SignIn(ctx, dto)
+	u, token, err := r.Env.Services.User.SignIn(ctx, dto)
 	if err != nil {
 		return nil, err //TODO add custom errors
 	}

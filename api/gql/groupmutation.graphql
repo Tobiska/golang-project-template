@@ -1,0 +1,5 @@
+type GroupMutation
+
+extend type Mutation {
+    group: GroupMutation!
+}

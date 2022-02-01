@@ -1,19 +1,25 @@
 extend type UserMutation {
     create(
         input: UserCreateInput!
-    ): UserCreateResult! @goField(forceResolver: true) @isAuthJWT
+    ): UserCreateResult! @goField(forceResolver: true)
 }
 
 input UserCreateInput {
     username: String!
     email: String!
     password: String!
+    role: Role!
 }
 
 type UserCreateOk {
     user: User!
 }
 
+type ValidationErrorProblem implements ProblemInterface{
+    message: String!
+}
+
 union UserCreateResult =
         | InternalErrorProblem
+        | ValidationErrorProblem
         | UserCreateOk

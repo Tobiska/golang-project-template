@@ -10,7 +10,7 @@ import (
 )
 
 func (r *userQueryResolver) FindByID(ctx context.Context, obj *model.UserQuery, id int) (*model.User, error) {
-	u, err := r.Env.UserService.GetById(ctx, id)
+	u, err := r.Env.Services.User.GetById(ctx, id)
 	if err != nil {
 		return nil, err
 	}

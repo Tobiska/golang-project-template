@@ -1,0 +1,17 @@
+extend type GroupMutation {
+    create(
+        input: GroupCreateInput!
+    ): GroupCreateResult! @goField(forceResolver: true) @isAuthJWT @hasRole(role: Admin)
+}
+
+input GroupCreateInput {
+    name: String!
+}
+
+type GroupCreateOk {
+    group: Group!
+}
+
+union GroupCreateResult =
+    | InternalErrorProblem
+    | GroupCreateOk
