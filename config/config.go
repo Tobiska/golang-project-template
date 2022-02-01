@@ -1,6 +1,8 @@
 package config
 
-import "github.com/ilyakaznacheev/cleanenv"
+import (
+	"github.com/ilyakaznacheev/cleanenv"
+)
 
 type (
 	Config struct {
@@ -30,19 +32,29 @@ type (
 	}
 
 	PG struct {
-		Host             string `yaml:"host" env:"POSTGRES_HOST"`
-		DbName           string `yaml:"db_name" env:"POSTGRES_DB"`
-		Username         string `yaml:"username" env:"POSTGRES_USERNAME"`
-		Password         string `yaml:"password" env:"POSTGRES_PASSWORD"`
-		Port             string `yaml:"port" env:"POSTGRES_PORT"`
-		AttemptToConnect int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPTS"`
+		Host                string `yaml:"host" env:"POSTGRES_HOST"`
+		DbName              string `yaml:"db_name" env:"POSTGRES_DB"`
+		Username            string `yaml:"username" env:"POSTGRES_USERNAME"`
+		Password            string `yaml:"password" env:"POSTGRES_PASSWORD"`
+		Port                string `yaml:"port" env:"POSTGRES_PORT"`
+		AttemptToConnect    int    `yaml:"attempt_to_connect" env:"POSTGRES_ATTEMPTS"`
+		MigrationsSourceURL string `yaml:"migrations_source_url" env:"MIGRATIONS_SOURCE_URL"`
 	}
 )
 
-func NewConfig() (*Config, error) {
+func NewConfig() (*Config, error) { //TODO add logger
 	cfg := &Config{}
+	//once.Do(func() {
+	//	if err := cleanenv.ReadConfig("config/.env", cfg); err != nil {
+	//		return cfg, err
+	//	}
+	//
+	//	if err := cleanenv.ReadEnv(cfg); err != nil {
+	//		return cfg, err
+	//	}
+	//})
 
-	if err := cleanenv.ReadConfig(".env", cfg); err != nil {
+	if err := cleanenv.ReadConfig("config/.env", cfg); err != nil {
 		return cfg, err
 	}
 
