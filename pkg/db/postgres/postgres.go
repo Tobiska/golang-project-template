@@ -22,7 +22,7 @@ type Client interface {
 func NewClient(ctx context.Context, maxAttempts int, cfg config.Config) (*pgxpool.Pool, error) {
 	var pool *pgxpool.Pool
 	var err error
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", cfg.PG.Username, cfg.PG.Password, cfg.PG.Host, cfg.PG.Port, cfg.PG.DbName)
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", cfg.PG.Username, cfg.PG.Password, cfg.PG.Host, cfg.PG.Port, cfg.PG.DbName)
 	err = utils.DoWithTries(func() error {
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()

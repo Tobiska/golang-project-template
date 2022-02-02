@@ -18,7 +18,7 @@ type Migration struct {
 func NewMigration(ctx context.Context, cfg *config.Config) (*Migration, error) {
 	var m *migrate.Migrate
 	var err error
-	databaseURL := fmt.Sprintf(`postgres://%s:%s@%s:%s/%s`, cfg.PG.Username, cfg.PG.Password, cfg.PG.Host, cfg.PG.Port, cfg.PG.DbName)
+	databaseURL := fmt.Sprintf(`postgres://%s:%s@%s:%s/%s?sslmode=disable`, cfg.PG.Username, cfg.PG.Password, cfg.PG.Host, cfg.PG.Port, cfg.PG.DbName)
 	err = utils.DoWithTries(func() error {
 		_, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()

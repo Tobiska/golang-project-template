@@ -13,11 +13,15 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data/
   app:
-    build: ./containers/v2
-    container_name: app
-    image: app
+    build:
+      context: .
+      dockerfile: ./containers/v2/Dockerfile
+    expose:
+      - 8080
     ports:
       - "8086:8080"
+    volumes:
+      - .:/golang-project-template
     depends_on:
       - db
 

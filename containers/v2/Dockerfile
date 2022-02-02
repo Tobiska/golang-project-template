@@ -1,6 +1,7 @@
 FROM golang:latest
-WORKDIR /app
-COPY ./ /app
-RUN go mod download
+RUN mkdir /golang-project-template
+WORKDIR /golang-project-template
+ADD . /golang-project-template
+RUN go mod tidy | go mod download
 RUN go get github.com/githubnemo/CompileDaemon
-ENTRYPOINT CompileDaemon --build="go build cmd/main.go -o app" --command=./app
+ENTRYPOINT CompileDaemon --build="go build -tags migrate -o app ./cmd" --command=./app
