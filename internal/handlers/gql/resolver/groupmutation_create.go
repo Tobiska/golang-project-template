@@ -5,6 +5,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	groupServ "golang-project-template/internal/domains/group/service"
 	"golang-project-template/internal/domains/user/entity"
 	groupFeature "golang-project-template/internal/handlers/gql/feature/group"
@@ -19,6 +20,7 @@ func (r *groupMutationResolver) Create(ctx context.Context, obj *model.GroupMuta
 		GroupOwner: u,
 	}
 	group, err := r.Env.Services.Group.Create(ctx, dto)
+	fmt.Println("Group: ", group)
 	if err != nil {
 		return nil, err
 	}

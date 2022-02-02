@@ -52,7 +52,7 @@ func (r *Repository) CreateGroup(ctx context.Context, group *entity.Group) error
 		  VALUES 
 					($1, $2, $3)
 		  RETURNING Uuid`
-	if err := r.client.QueryRow(ctx, q, uuid.New(), group.Name, group.Owner.Id).Scan(&group.Uuid); err != nil {
+	if err := r.client.QueryRow(ctx, q, uuid.New(), group.Name, group.OwnerId).Scan(&group.Uuid); err != nil {
 		return err //todo add custom errors
 	}
 	return nil

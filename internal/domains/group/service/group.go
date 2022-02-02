@@ -37,13 +37,13 @@ func (s *Service) GetByUuid(ctx context.Context, uuid string) (*entity.Group, er
 
 func (s *Service) Create(ctx context.Context, dto CreateDTO) (*entity.Group, error) {
 	g := &entity.Group{
-		Name:  dto.Name,
-		Owner: dto.GroupOwner,
+		Name:    dto.Name,
+		OwnerId: dto.GroupOwner.Id,
 	}
 	if err := s.repository.CreateGroup(ctx, g); err != nil {
 		return nil, err
 	}
-	g.Owner.GroupID = g.Uuid
+	dto.GroupOwner.GroupID = g.Uuid
 	if err := s.userService.AttachGroup(ctx, dto.GroupOwner); err != nil {
 		return nil, err
 	}
