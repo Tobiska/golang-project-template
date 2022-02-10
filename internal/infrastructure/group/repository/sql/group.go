@@ -2,6 +2,7 @@ package sql
 
 import (
 	"context"
+	"github.com/georgysavva/scany/pgxscan"
 	"github.com/google/uuid"
 	"golang-project-template/internal/domains/group/entity"
 	"golang-project-template/pkg/db/postgres"
@@ -18,19 +19,9 @@ func NewRepository(client postgres.Client) *Repository {
 }
 
 func (r *Repository) GetAll(ctx context.Context) ([]*entity.Group, error) {
-	groups := make([]*entity.Group, 0, 10) //TODO optimize
-	rows, err := r.client.Query(ctx, `SELECT groups.uuid, groups.name, groups.owner_id FROM groups`)
-	if err != nil {
+	var groups []*entity.Group
+	if err := pgxscan.Select(ctx, r.client, &groups, `SELECT groups.uuid, groups.name, groups.owner_id FROM groups`); err != nil {
 		return nil, err
-	}
-	it := 0
-	for rows.Next() {
-		g := &entity.Group{}
-		if err := rows.Scan(&g.Uuid, &g.Name, &g.OwnerId); err != nil {
-			return nil, err
-		}
-		groups = append(groups, g)
-		it++
 	}
 
 	return groups, nil

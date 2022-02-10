@@ -6,15 +6,16 @@ import (
 
 type (
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		PG   `yaml:"postgres"`
-		Log  `yaml:"logger"`
-		Auth `yaml:"auth"`
+		App   `yaml:"app"`
+		HTTP  `yaml:"http"`
+		PG    `yaml:"postgres"`
+		Log   `yaml:"logger"`
+		Auth  `yaml:"auth"`
+		Redis `yaml:"redis"`
 	}
 
 	App struct {
-		Name    string `yaml:"name" env:"APP_NAME"`
+		Name    string `env:"APP_NAME" yaml:"name"`
 		Version string `yaml:"version" env:"APP_VERSION"`
 		IsDebug bool   `yaml:"is_debug" env:"APP_IS_DEBUG"`
 	}
@@ -29,6 +30,15 @@ type (
 
 	Auth struct {
 		TTL string `yaml:"ttl" env:"AUTH_TTL"` //TODD FIX move env variable
+	}
+
+	Redis struct {
+		Host       string `yaml:"host" env:"REDIS_HOST"`
+		Password   string `yaml:"password" env:"REDIS_PASSWORD"`
+		Username   string `yaml:"username" env:"REDIS_USERNAME"`
+		Port       string `yaml:"port" env:"REDIS_PORT"`
+		DB         int    `yaml:"db_name" env:"REDIS_DB"`
+		ExpireTime string `yaml:"expire_time" env:"REDIS_EXPIRE_TIME"`
 	}
 
 	PG struct {
@@ -58,9 +68,13 @@ func NewConfig() (*Config, error) { //TODO add logger
 		return cfg, err
 	}
 
-	if err := cleanenv.ReadEnv(cfg); err != nil {
+	if err := cleanenv.ReadConfig("config/config.yml", cfg); err != nil {
 		return cfg, err
 	}
+
+	//if err := cleanenv.ReadEnv(cfg); err != nil {
+	//	return cfg, err
+	//}
 
 	return cfg, nil
 

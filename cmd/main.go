@@ -4,6 +4,7 @@ import (
 	"golang-project-template/config"
 	"golang-project-template/internal/app"
 	"log"
+	//"golang-project-template/internal/app"
 )
 
 func main() {
