@@ -4,6 +4,7 @@ import (
 	"context"
 	"golang-project-template/internal/domains/group/entity"
 	userServ "golang-project-template/internal/domains/user/service"
+	"golang-project-template/internal/infrastructure"
 )
 
 type Service struct {
@@ -19,7 +20,16 @@ func NewGroupService(repository Repository, service *userServ.Service) *Service 
 }
 
 func (s *Service) GetAll(ctx context.Context) ([]*entity.Group, error) {
-	groups, err := s.repository.GetAll(ctx)
+	so := &infrastructure.SortOption{
+		Field:     "uuid",
+		Direction: "Asc",
+	}
+	fo := &infrastructure.FilterOption{
+		Field:    "owner_id",
+		Value:    "1",
+		Operator: infrastructure.E,
+	}
+	groups, err := s.repository.GetAll(ctx, so, fo)
 	if err != nil {
 		return nil, err
 	}

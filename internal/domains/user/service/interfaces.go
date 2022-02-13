@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	"golang-project-template/internal/domains/user/entity"
+	"golang-project-template/internal/infrastructure"
 )
 
 type (
 	Repository interface {
-		GetAll(ctx context.Context, limit, offset int) ([]*entity.User, error)
+		GetAll(ctx context.Context, limit, offset int, opts ...infrastructure.Option) ([]*entity.User, error)
 		GetByIds(ctx context.Context, ids ...int) ([]*entity.User, error)
 		GetById(ctx context.Context, id int) (*entity.User, error)
 		GetUsersByGroupId(ctx context.Context, uuid string) ([]*entity.User, error)

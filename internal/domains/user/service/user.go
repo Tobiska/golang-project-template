@@ -4,6 +4,7 @@ import (
 	"context"
 	"golang-project-template/internal/domains/apperror"
 	"golang-project-template/internal/domains/user/entity"
+	"golang-project-template/internal/infrastructure"
 	"golang-project-template/pkg/auth"
 	"strconv"
 )
@@ -29,7 +30,11 @@ func New(repository Repository, manager auth.TokenManager) *Service {
 }
 
 func (s *Service) GetAll(ctx context.Context, limit, offset int) ([]*entity.User, error) {
-	users, err := s.repository.GetAll(ctx, limit, offset)
+	so := &infrastructure.SortOption{
+		Field:     "id",
+		Direction: "Asc",
+	}
+	users, err := s.repository.GetAll(ctx, limit, offset, so)
 	if err != nil {
 		return users, apperror.InternalError
 	}
