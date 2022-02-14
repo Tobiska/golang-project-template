@@ -6,6 +6,7 @@ import (
 	"golang-project-template/config"
 	"golang-project-template/internal/domains"
 	res "golang-project-template/internal/handlers/gql/resolver"
+	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
 	"golang-project-template/pkg/auth"
 	"golang-project-template/pkg/db/postgres"
 	"golang-project-template/pkg/httpserver"
@@ -19,7 +20,6 @@ import (
 
 import (
 	userServ "golang-project-template/internal/domains/user/service"
-	userRepo "golang-project-template/internal/infrastructure/user/repository/sql"
 )
 
 const (

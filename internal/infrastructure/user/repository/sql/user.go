@@ -3,7 +3,10 @@ package sql
 import (
 	"context"
 	"fmt"
+	sq "github.com/Masterminds/squirrel"
+	"github.com/georgysavva/scany/pgxscan"
 	"golang-project-template/internal/domains/user/entity"
+	"golang-project-template/internal/infrastructure"
 	"golang-project-template/pkg/db/postgres"
 	"strconv"
 	"strings"
@@ -19,19 +22,33 @@ func NewRepository(client postgres.Client) *Repository {
 	}
 }
 
-func (r *Repository) GetAll(ctx context.Context, limit, offset int) ([]*entity.User, error) {
-	users := make([]*entity.User, 0, limit)
-	rows, err := r.client.Query(ctx, `SELECT users.id, users.name, users.email, users.role FROM users LIMIT $1 OFFSET $2`, limit, offset)
+func (r *Repository) GetAll(ctx context.Context, limit, offset int, opts ...infrastructure.Option) ([]*entity.User, error) {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	var users []*entity.User
+	qb := psql.Select("users.id, users.name, users.email, users.role").From("users")
+	for _, opt := range opts {
+		qb = opt.Apply(qb)
+	}
+	sql, args, err := qb.ToSql()
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
-		u := &entity.User{}
-		if err := rows.Scan(u.Id, u.Username, u.Role, u.Email); err != nil {
-			return nil, err
-		}
-		users = append(users, u)
+	err = pgxscan.Select(ctx, r.client, &users, sql, args)
+	if err != nil {
+		return nil, err
 	}
+
+	//rows, err := r.client.Query(ctx, sql, args)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//for rows.Next() {
+	//	u := &entity.User{}
+	//	if err := rows.Scan(u.Id, u.Username, u.Role, u.Email); err != nil {
+	//		return nil, err
+	//	}
+	//	users = append(users, u)
+	//}
 
 	return users, nil
 }
